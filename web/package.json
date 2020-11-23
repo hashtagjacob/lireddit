@@ -13,7 +13,7 @@
     "@chakra-ui/core": "^0.5.2",
     "@emotion/core": "^10.0.27",
     "@emotion/styled": "^10.0.27",
-    "@urql/exchange-graphcache": "^3.0.2",
+    "@urql/exchange-graphcache": "^3.1.11",
     "emotion-theming": "^10.0.27",
     "formik": "^2.1.5",
     "graphql": "^15.3.0",
@@ -21,18 +21,17 @@
     "isomorphic-unfetch": "^3.0.0",
     "next": "^9.1.7",
     "next-apollo": "^5.0.0",
-    "next-urql": "^1.1.0",
+    "next-urql": "^2.1.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "react-is": "^16.13.1",
-    "urql": "^1.10.0"
+    "react-is": "^17.0.1",
+    "urql": "^1.11.3"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "1.17.7",
-    "@graphql-codegen/typescript": "1.17.7",
-    "@graphql-codegen/typescript-operations": "1.17.7",
-    "@graphql-codegen/typescript-react-apollo": "^2.0.6",
-    "@graphql-codegen/typescript-urql": "^2.0.0",
+    "@graphql-codegen/cli": "1.19.2",
+    "@graphql-codegen/typescript": "1.17.11",
+    "@graphql-codegen/typescript-operations": "1.17.10",
+    "@graphql-codegen/typescript-urql": "^2.0.2",
     "@types/node": "^14.0.27",
     "typescript": "^3.9.7"
   }
