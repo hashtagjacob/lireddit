@@ -1,6 +1,6 @@
 import React from 'react';
 import { Formik, Form } from 'formik';
-import { Box, Button } from '@chakra-ui/core';
+import { Box, Button, Flex, Link } from '@chakra-ui/core';
 import { Wrapper } from '../components/Wrapper';
 import { InputField } from '../components/InputField';
 import { useLoginMutation } from '../generated/graphql';
@@ -8,6 +8,7 @@ import { toErrorMap } from '../utils/toErrorMap';
 import { useRouter } from 'next/dist/client/router';
 import { withUrqlClient } from 'next-urql';
 import { createUrqlClient } from '../utils/createUrqlClient';
+import NextLink from 'next/link';
 
 const Login: React.FC<{}> = ({}) => {
   const [, login] = useLoginMutation();
@@ -15,9 +16,9 @@ const Login: React.FC<{}> = ({}) => {
   return (
     <Wrapper variant='small'>
       <Formik
-        initialValues={{ username: '', password: '' }}
-        onSubmit={async ({ username, password }, { setErrors }) => {
-          const response = await login({ options: { username, password } });
+        initialValues={{ usernameOrEmail: '', password: '' }}
+        onSubmit={async ({ usernameOrEmail, password }, { setErrors }) => {
+          const response = await login({ usernameOrEmail, password });
           if (response.data?.login.errors) {
             setErrors(toErrorMap(response.data.login.errors));
           } else if (response.data?.login.user) {
@@ -28,9 +29,9 @@ const Login: React.FC<{}> = ({}) => {
         {({ isSubmitting }) => (
           <Form>
             <InputField
-              label='Username'
-              name='username'
-              placeholder='username'
+              label='Username Or Email'
+              name='usernameOrEmail'
+              placeholder='username or email'
             />
             <Box mt={4}>
               <InputField
@@ -40,6 +41,13 @@ const Login: React.FC<{}> = ({}) => {
                 type='password'
               />
             </Box>
+            <Flex>
+              <NextLink href='/forgot-password'>
+                <Link ml='auto' mt={2}>
+                  Forgot password?
+                </Link>
+              </NextLink>
+            </Flex>
             <Button
               type='submit'
               mt={4}
