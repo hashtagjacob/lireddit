@@ -13,17 +13,23 @@ import Redis from 'ioredis';
 import { createConnection } from 'typeorm';
 import { User } from './entities/User';
 import { Post } from './entities/Post';
+import path from 'path';
+import { Updoot } from './entities/Updoot';
 
 const main = async () => {
-  await createConnection({
+  const connection = await createConnection({
     type: 'postgres',
     database: 'lireddit2',
     username: 'postgres',
     password: 'postgres',
     logging: true,
     synchronize: true,
-    entities: [Post, User],
+    migrations: [path.join(__dirname, './migrations/*')],
+    entities: [Post, User, Updoot],
   });
+  await connection.runMigrations();
+
+  // await Post.delete({});
 
   const app = express();
   app.use(
