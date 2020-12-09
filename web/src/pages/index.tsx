@@ -17,7 +17,7 @@ import { Navbar } from '../components/Navbar';
 import { usePostsQuery } from '../generated/graphql';
 import { createUrqlClient } from '../utils/createUrqlClient';
 import NextLink from 'next/link';
-import { ChevronUpIcon, ChevronDownIcon } from '@chakra-ui/icons';
+import { UpdootSection } from '../components/UpdootSection';
 
 interface indexProps {}
 
@@ -41,24 +41,7 @@ export const Index: React.FC<indexProps> = ({}) => {
         {data && !fetching ? (
           data.posts.posts?.map((post) => (
             <Flex key={post.id} p={5} shadow='md' borderWidth='1px'>
-              <Flex
-                direction='column'
-                alignItems='center'
-                justifyContent='center'
-              >
-                <IconButton
-                  onClick={() => console.log('updooooted')}
-                  aria-label='updoot post'
-                  icon='chevron-up'
-                  size='sm'
-                />
-                {post.points}
-                <IconButton
-                  aria-label='downdoot post'
-                  icon='chevron-down'
-                  size='sm'
-                />
-              </Flex>
+              <UpdootSection post={post} />
               <Box ml={4}>
                 <Heading fontSize='xl' mr={2}>
                   {post.title}

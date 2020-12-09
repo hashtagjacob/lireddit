@@ -48,12 +48,18 @@ export class PostResolver {
     @Arg('value', () => Int) value: Number,
     @Ctx() { req }: MyContext
   ): Promise<Boolean> {
-    const realValue = value > 0 ? 1 : -1;
+    let realValue = value > 0 ? 1 : -1;
     const exists = await Updoot.findOne({ userId: req.session.userId, postId });
+    console.log('\n\nexisting:', exists);
+    console.log('real val: ', realValue);
+
     if (exists) {
       if (exists.value !== realValue) {
         exists.value = realValue;
         await exists.save();
+        //when user already voted and changes vote we need to miltiply the effect
+        // ex. from 10 points to 8 points
+        realValue = realValue * 2;
       } else {
         return true;
       }
@@ -71,9 +77,11 @@ export class PostResolver {
     }
 
     const post = await Post.findOne(postId);
+    console.log(post);
+
     if (post) {
       post.points = post.points + realValue;
-      post.save();
+      await post.save();
       return true;
     }
     return false;
