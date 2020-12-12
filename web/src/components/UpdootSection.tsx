@@ -21,6 +21,7 @@ export const UpdootSection: React.FC<UpdootSectionProps> = ({ post }) => {
           setFetching('not-fetching');
         }}
         aria-label='updoot post'
+        variantColor={post.voteStatus === 1 ? 'green' : undefined}
         icon='chevron-up'
         size='sm'
         isLoading={fetching === 'updooting'}
@@ -33,6 +34,7 @@ export const UpdootSection: React.FC<UpdootSectionProps> = ({ post }) => {
           setFetching('not-fetching');
         }}
         aria-label='downdoot post'
+        variantColor={post.voteStatus === -1 ? 'red' : undefined}
         icon='chevron-down'
         size='sm'
         isLoading={fetching === 'downdooting'}

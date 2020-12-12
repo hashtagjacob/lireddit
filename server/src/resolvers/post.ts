@@ -15,7 +15,7 @@ import {
   ObjectType,
 } from 'type-graphql';
 import { Post } from '../entities/Post';
-import { LessThan } from 'typeorm';
+import { getConnection, LessThan } from 'typeorm';
 import { Updoot } from '../entities/Updoot';
 
 @InputType()
@@ -89,62 +89,63 @@ export class PostResolver {
 
   @Query(() => PaginatedPosts)
   async posts(
-    @Arg('limit', () => Int!) limit: number,
-    @Arg('cursor', () => String, { nullable: true }) cursor: string | null
+    @Arg('limit', () => Int) limit: number,
+    @Arg('cursor', () => String, { nullable: true }) cursor: string | null,
+    @Ctx() { req }: MyContext
   ): Promise<PaginatedPosts> {
-    const realLimit = limit > 50 ? 50 : limit;
-    const realLimitIncremented = realLimit + 1;
+    // 20 -> 21
+    const realLimit = Math.min(50, limit);
+    const reaLimitPlusOne = realLimit + 1;
 
-    let result;
+    const replacements: any[] = [reaLimitPlusOne, req.session.userId];
+
     if (cursor) {
-      result = await Post.find({
-        where: { createdAt: LessThan(new Date(parseInt(cursor))) },
-        order: { createdAt: 'DESC' },
-        take: realLimitIncremented,
-      });
-    } else {
-      result = await Post.find({
-        take: realLimitIncremented,
-        order: { createdAt: 'DESC' },
-      });
+      replacements.push(new Date(parseInt(cursor)));
     }
 
-    // let params;
-    // if (cursor) {
-    //   params = [realLimitIncremented, cursor];
-    // } else {
-    //   params = [realLimitIncremented];
-    // }
-
-    // const result = await getConnection().query(
-    //   `
-    // select p.* from post p
-    // json_build_object(
-    //  'id': u.id,
-    // 'username': u.username,
-    //  'email': u.email
-    // )
-    // inner join public.user u on u.id = p."creatorId"
-    // ${cursor ? `where p."createdAt < $2` : ''}
-    // order by p."createdAt" DESC
-    // limit $1
-    // `,
-    //   params
-    // );
+    const posts = await getConnection().query(
+      `
+    select p.*,
+    json_build_object(
+      'id', u.id,
+      'username', u.username,
+      'email', u.email,
+      'createdAt', u."createdAt",
+      'updatedAt', u."updatedAt"
+      ) creator,
+    ${
+      req.session.userId
+        ? '(select value from updoot where "userId" = $2 and "postId" = p.id) "voteStatus"'
+        : 'null as "voteStatus"'
+    }
+    from post p
+    inner join public.user u on u.id = p."creatorId"
+    ${cursor ? `where p."createdAt" < $3` : ''}
+    order by p."createdAt" DESC
+    limit $1
+    `,
+      replacements
+    );
 
     // const qb = getConnection()
     //   .getRepository(Post)
-    //   .createQueryBuilder('p')
-    //   .orderBy('"createdAt"', 'DESC');
+    //   .createQueryBuilder("p")
+    //   .innerJoinAndSelect("p.creator", "u", 'u.id = p."creatorId"')
+    //   .orderBy('p."createdAt"', "DESC")
+    //   .take(reaLimitPlusOne);
 
     // if (cursor) {
-    //   qb.where('"createdAt"<:cursor', { cursor: new Date(parseInt(cursor)) });
+    //   qb.where('p."createdAt" < :cursor', {
+    //     cursor: new Date(parseInt(cursor)),
+    //   });
     // }
-    // const result = await qb.take(realLimitIncremented).getMany();
+
+    // const posts = await qb.getMany();
+    // console.log("posts: ", posts);
 
     return {
-      posts: result.slice(0, realLimit),
-      hasMore: result.length === realLimitIncremented,
+      posts: posts.slice(0, realLimit),
+      hasMore: posts.length === reaLimitPlusOne,
     };
   }
 
