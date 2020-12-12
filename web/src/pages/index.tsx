@@ -30,22 +30,20 @@ export const Index: React.FC<indexProps> = ({}) => {
   // const router = useRouter();
   return (
     <Layout>
-      <Flex align='center'>
-        <Heading>LiReddit</Heading>
-        <NextLink href='/create-post'>
-          <Link ml='auto'>create post</Link>
-        </NextLink>
-      </Flex>
-      <br />
       <Stack spacing={8}>
         {data && !fetching ? (
           data.posts.posts?.map((post) => (
             <Flex key={post.id} p={5} shadow='md' borderWidth='1px'>
               <UpdootSection post={post} />
               <Box ml={4}>
-                <Heading fontSize='xl' mr={2}>
-                  {post.title}
-                </Heading>{' '}
+                <NextLink href='/post/[id]' as={`/post/${post.id}`}>
+                  <Link>
+                    <Heading fontSize='xl' mr={2}>
+                      {post.title}
+                    </Heading>
+                  </Link>
+                </NextLink>
+
                 <Box color='gray.400'>posted by: {post.creator.username}</Box>
                 <Text mt={4}>{post.textSnippet}...</Text>
               </Box>
