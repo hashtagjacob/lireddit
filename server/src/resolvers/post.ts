@@ -150,6 +150,7 @@ export class PostResolver {
     // console.log("posts: ", posts);
 
     return {
+      id: null,
       posts: posts.slice(0, realLimit),
       hasMore: posts.length === reaLimitPlusOne,
     };
@@ -174,24 +175,32 @@ export class PostResolver {
   }
 
   @Mutation(() => Post, { nullable: true })
+  @UseMiddleware(isAuth)
   async updatePost(
-    @Arg('id') id: number,
-    @Arg('title', () => String, { nullable: true }) title: string
+    @Arg('id', () => Int!) id: number,
+    @Arg('title') title: string,
+    @Arg('text') text: string,
+    @Ctx() { req }: MyContext
   ): Promise<Post | null> {
-    const post = await Post.findOne(id);
+    const post = await Post.findOne({
+      where: { id: id, creatorId: req.session.userId },
+    });
     if (!post) {
       return null;
     }
-    if (typeof title !== 'undefined') {
-      post.title = title;
-      await post.save();
-    }
+    post.title = title;
+    post.text = text;
+    post.save();
     return post;
   }
 
   @Mutation(() => Boolean)
-  async deletePost(@Arg('id') id: number): Promise<boolean> {
-    await Post.delete(id);
+  @UseMiddleware(isAuth)
+  async deletePost(
+    @Arg('id', () => Int!) id: number,
+    @Ctx() { req }: MyContext
+  ): Promise<boolean> {
+    await Post.delete({ id, creatorId: req.session.userId });
     return true;
   }
 }
