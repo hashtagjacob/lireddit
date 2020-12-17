@@ -1,80 +1,48 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Icon,
-  IconButton,
-  Link,
-  Stack,
-  Text,
-} from '@chakra-ui/core';
-import { withUrqlClient } from 'next-urql';
-import { useRouter } from 'next/router';
-import React, { useState } from 'react';
-import { Layout } from '../components/Layout';
-import { Navbar } from '../components/Navbar';
-import {
-  useDeletePostMutation,
-  useMeQuery,
-  usePostsQuery,
-} from '../generated/graphql';
-import { createUrqlClient } from '../utils/createUrqlClient';
-import NextLink from 'next/link';
-import { UpdootSection } from '../components/UpdootSection';
+import { Box, Button, Flex, Heading, Link, Stack, Text } from "@chakra-ui/core";
+import { withUrqlClient } from "next-urql";
+import NextLink from "next/link";
+import React, { useState } from "react";
+import { EditDeletePostButtons } from "../components/EditDeletePostButtons";
+import { Layout } from "../components/Layout";
+import { UpdootSection } from "../components/UpdootSection";
+import { useMeQuery, usePostsQuery } from "../generated/graphql";
+import { createUrqlClient } from "../utils/createUrqlClient";
 
 interface indexProps {}
 
 export const Index: React.FC<indexProps> = ({}) => {
-  const [{ data: me }] = useMeQuery();
   const [variables, setVariables] = useState({
     limit: 20,
     cursor: null as string | null,
   });
   const [{ data, fetching }] = usePostsQuery({ variables });
-  const [{}, deletePost] = useDeletePostMutation();
   return (
     <Layout>
       <Stack spacing={8}>
         {data && !fetching ? (
           data.posts.posts?.map((post) =>
             !post ? null : (
-              <Flex key={post.id} p={5} shadow='md' borderWidth='1px'>
+              <Flex key={post.id} p={5} shadow="md" borderWidth="1px">
                 <UpdootSection post={post} />
                 <Box ml={4} flex={1}>
-                  <NextLink href='/post/[id]' as={`/post/${post.id}`}>
+                  <NextLink href="/post/[id]" as={`/post/${post.id}`}>
                     <Link>
-                      <Heading fontSize='xl' mr={2}>
+                      <Heading fontSize="xl" mr={2}>
                         {post.title}
                       </Heading>
                     </Link>
                   </NextLink>
 
-                  <Box color='gray.400'>posted by: {post.creator.username}</Box>
+                  <Box color="gray.400">posted by: {post.creator.username}</Box>
 
                   <Flex>
                     <Text mt={4}>{post.textSnippet}...</Text>
-                    {me?.me?.id === post.creator.id ? (
-                      <Box ml='auto'>
-                        <NextLink
-                          href='/post/edit/[id]'
-                          as={`post/edit/${post.id}`}
-                        >
-                          <IconButton
-                            mr={4}
-                            as={Link}
-                            icon='edit'
-                            aria-label='Edit post'
-                          />
-                        </NextLink>
-
-                        <IconButton
-                          icon='delete'
-                          aria-label='Delete post'
-                          onClick={() => deletePost({ id: post.id })}
-                        />
-                      </Box>
-                    ) : null}
+                    <Box ml="auto">
+                      <EditDeletePostButtons
+                        id={post.id}
+                        creatorId={post.creator.id}
+                      />
+                    </Box>
                   </Flex>
                 </Box>
               </Flex>
@@ -94,7 +62,7 @@ export const Index: React.FC<indexProps> = ({}) => {
               })
             }
             isLoading={fetching}
-            m='auto'
+            m="auto"
             my={8}
           >
             load more

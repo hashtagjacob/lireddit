@@ -1,16 +1,20 @@
-import { Box, Button } from '@chakra-ui/core';
-import { Formik, Form } from 'formik';
-import { withUrqlClient } from 'next-urql';
-import { useRouter } from 'next/router';
-import React from 'react';
-import { InputField } from '../../../components/InputField';
-import { Layout } from '../../../components/Layout';
-import { useUpdatePostMutation } from '../../../generated/graphql';
-import { createUrqlClient } from '../../../utils/createUrqlClient';
-import { useGetPost } from '../../../utils/useGetPost';
+import { Box, Button } from "@chakra-ui/core";
+import { Form, Formik } from "formik";
+import { withUrqlClient } from "next-urql";
+import { useRouter } from "next/router";
+import React from "react";
+import { InputField } from "../../../components/InputField";
+import { Layout } from "../../../components/Layout";
+import {
+  usePostQuery,
+  useUpdatePostMutation,
+} from "../../../generated/graphql";
+import { createUrqlClient } from "../../../utils/createUrqlClient";
+import useGetIntId from "../../../utils/useGetIntId";
 
 const EditPost: React.FC<{}> = ({}) => {
-  const [{ data, fetching }] = useGetPost();
+  const id = useGetIntId();
+  const [{ fetching, data }] = usePostQuery({ variables: { id } });
   const [{}, updatePost] = useUpdatePostMutation();
   const router = useRouter();
 
@@ -23,37 +27,37 @@ const EditPost: React.FC<{}> = ({}) => {
   }
 
   return (
-    <Layout variant='small'>
+    <Layout variant="small">
       <Formik
         initialValues={{ title: data.post.title, text: data.post.text }}
         onSubmit={async (values, { setErrors }) => {
-          const response = await updatePost({ id: data.post!.id, ...values });
+          const response = await updatePost({ id, ...values });
           console.log(response);
           if (!response.error) {
-            router.push('/');
+            router.back();
           }
         }}
       >
         {({ isSubmitting }) => (
           <Form>
             <InputField
-              label='Post title'
-              name='title'
-              placeholder='title of your post'
+              label="Post title"
+              name="title"
+              placeholder="title of your post"
             />
             <Box mt={4}>
               <InputField
                 textarea
-                label='Body'
-                name='text'
-                placeholder='text...'
+                label="Body"
+                name="text"
+                placeholder="text..."
               />
             </Box>
             <Button
-              type='submit'
+              type="submit"
               mt={4}
               isLoading={isSubmitting}
-              variantColor='teal'
+              variantColor="teal"
             >
               save changes
             </Button>

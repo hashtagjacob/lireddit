@@ -1,9 +1,10 @@
-import { Box, Flex, Heading } from '@chakra-ui/core';
-import { withUrqlClient } from 'next-urql';
-import React from 'react';
-import { Layout } from '../../components/Layout';
-import { createUrqlClient } from '../../utils/createUrqlClient';
-import { useGetPost } from '../../utils/useGetPost';
+import { Box, Flex, Heading } from "@chakra-ui/core";
+import { withUrqlClient } from "next-urql";
+import React from "react";
+import { EditDeletePostButtons } from "../../components/EditDeletePostButtons";
+import { Layout } from "../../components/Layout";
+import { createUrqlClient } from "../../utils/createUrqlClient";
+import { useGetPost } from "../../utils/useGetPost";
 
 const Post = ({}) => {
   const [{ data, fetching }] = useGetPost();
@@ -14,9 +15,20 @@ const Post = ({}) => {
 
   return (
     <Layout>
-      <Heading>{data.post.title}</Heading>
-      <Box color='gray.500'>author: {data.post.creator.username}</Box>
-      {data.post.text}
+      <Flex direction="row" align="center" mb={4}>
+        <Box>
+          <Heading>{data.post.title}</Heading>
+          <Box color="gray.500">author: {data.post.creator.username}</Box>
+        </Box>
+        <Box ml="auto">
+          <EditDeletePostButtons
+            id={data.post.id}
+            creatorId={data.post.creator.id}
+          />
+        </Box>
+      </Flex>
+
+      <Box>{data.post.text}</Box>
     </Layout>
   );
 };

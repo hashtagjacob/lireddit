@@ -17,9 +17,9 @@ import path from 'path';
 import { Updoot } from './entities/Updoot';
 
 const main = async () => {
-  const connection = await createConnection({
+  await createConnection({
     type: 'postgres',
-    database: 'lireddit2',
+    database: 'lireddit',
     username: 'postgres',
     password: 'postgres',
     logging: true,
@@ -27,9 +27,9 @@ const main = async () => {
     migrations: [path.join(__dirname, './migrations/*')],
     entities: [Post, User, Updoot],
   });
-  await connection.runMigrations();
+  //await connection.runMigrations();
 
-  // await Post.delete({});
+  //await Post.delete({});
 
   const app = express();
   app.use(
