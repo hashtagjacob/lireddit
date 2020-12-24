@@ -1,13 +1,13 @@
-import { Box, Flex, Heading } from "@chakra-ui/core";
-import { withUrqlClient } from "next-urql";
-import React from "react";
-import { EditDeletePostButtons } from "../../components/EditDeletePostButtons";
-import { Layout } from "../../components/Layout";
-import { createUrqlClient } from "../../utils/createUrqlClient";
-import { useGetPost } from "../../utils/useGetPost";
+import { Box, Flex, Heading } from '@chakra-ui/core';
+import { withUrqlClient } from 'next-urql';
+import React from 'react';
+import { EditDeletePostButtons } from '../../components/EditDeletePostButtons';
+import { Layout } from '../../components/Layout';
+import { createUrqlClient } from '../../utils/createUrqlClient';
+import { useGetPost } from '../../utils/useGetPost';
 
 const Post = ({}) => {
-  const [{ data, fetching }] = useGetPost();
+  const { data, loading } = useGetPost();
 
   if (!data?.post) {
     return <Layout>could not find post</Layout>;
@@ -33,4 +33,4 @@ const Post = ({}) => {
   );
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: true })(Post);
+export default Post;

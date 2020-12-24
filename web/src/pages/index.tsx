@@ -1,25 +1,26 @@
-import { Box, Button, Flex, Heading, Link, Stack, Text } from "@chakra-ui/core";
-import { withUrqlClient } from "next-urql";
-import NextLink from "next/link";
-import React, { useState } from "react";
-import { EditDeletePostButtons } from "../components/EditDeletePostButtons";
-import { Layout } from "../components/Layout";
-import { UpdootSection } from "../components/UpdootSection";
-import { useMeQuery, usePostsQuery } from "../generated/graphql";
-import { createUrqlClient } from "../utils/createUrqlClient";
+import { Box, Button, Flex, Heading, Link, Stack, Text } from '@chakra-ui/core';
+import { withUrqlClient } from 'next-urql';
+import NextLink from 'next/link';
+import React, { useState } from 'react';
+import { EditDeletePostButtons } from '../components/EditDeletePostButtons';
+import { Layout } from '../components/Layout';
+import { UpdootSection } from '../components/UpdootSection';
+import { useMeQuery, usePostsQuery } from '../generated/graphql';
+import { createUrqlClient } from '../utils/createUrqlClient';
 
 interface indexProps {}
 
 export const Index: React.FC<indexProps> = ({}) => {
-  const [variables, setVariables] = useState({
-    limit: 20,
-    cursor: null as string | null,
+  const { data, loading, fetchMore, variables } = usePostsQuery({
+    variables: {
+      limit: 20,
+      cursor: null as string | null,
+    },
   });
-  const [{ data, fetching }] = usePostsQuery({ variables });
   return (
     <Layout>
       <Stack spacing={8}>
-        {data && !fetching ? (
+        {data && !loading ? (
           data.posts.posts?.map((post) =>
             !post ? null : (
               <Flex key={post.id} p={5} shadow="md" borderWidth="1px">
@@ -56,12 +57,15 @@ export const Index: React.FC<indexProps> = ({}) => {
         <Flex>
           <Button
             onClick={() =>
-              setVariables({
-                cursor: data.posts.posts[data.posts.posts.length - 1].createdAt,
-                limit: 10,
+              fetchMore({
+                variables: {
+                  limit: variables?.limit,
+                  cursor:
+                    data.posts.posts[data.posts.posts.length - 1].createdAt,
+                },
               })
             }
-            isLoading={fetching}
+            isLoading={loading}
             m="auto"
             my={8}
           >
@@ -73,4 +77,4 @@ export const Index: React.FC<indexProps> = ({}) => {
   );
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: true })(Index);
+export default Index;

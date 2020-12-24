@@ -12,14 +12,16 @@ import { useRegisterMutation } from '../generated/graphql';
 interface registerProps {}
 
 const Register: React.FC<registerProps> = ({}) => {
-  const [, register] = useRegisterMutation();
+  const [register] = useRegisterMutation();
   const router = useRouter();
   return (
-    <Wrapper variant='small'>
+    <Wrapper variant="small">
       <Formik
         initialValues={{ username: '', password: '', email: '' }}
         onSubmit={async ({ username, password, email }, { setErrors }) => {
-          const response = await register({ username, password, email });
+          const response = await register({
+            variables: { username, password, email },
+          });
           if (response.data?.register.errors) {
             setErrors(toErrorMap(response.data.register.errors));
           } else if (response.data?.register.user) {
@@ -30,26 +32,26 @@ const Register: React.FC<registerProps> = ({}) => {
         {({ isSubmitting }) => (
           <Form>
             <InputField
-              label='Username'
-              name='username'
-              placeholder='username'
+              label="Username"
+              name="username"
+              placeholder="username"
             />
             <Box mt={4}>
-              <InputField label='Email' name='email' placeholder='email' />
+              <InputField label="Email" name="email" placeholder="email" />
             </Box>
             <Box mt={4}>
               <InputField
-                label='Password'
-                name='password'
-                placeholder='password'
-                type='password'
+                label="Password"
+                name="password"
+                placeholder="password"
+                type="password"
               />
             </Box>
             <Button
-              type='submit'
+              type="submit"
               mt={4}
               isLoading={isSubmitting}
-              variantColor='teal'
+              variantColor="teal"
             >
               register
             </Button>
@@ -60,4 +62,4 @@ const Register: React.FC<registerProps> = ({}) => {
   );
 };
 
-export default withUrqlClient(createUrqlClient)(Register);
+export default Register;

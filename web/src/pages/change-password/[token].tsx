@@ -12,18 +12,22 @@ import { toErrorMap } from '../../utils/toErrorMap';
 import NextLink from 'next/link';
 
 const ChangePassword: React.FC = () => {
-  const [, changePassword] = useChangePasswordMutation();
+  const [changePassword] = useChangePasswordMutation();
   const router = useRouter();
   const [tokenError, setTokenError] = useState('');
   return (
-    <Wrapper variant='small'>
+    <Wrapper variant="small">
       <Formik
         initialValues={{ newPassword: '' }}
         onSubmit={async ({ newPassword }, { setErrors }) => {
           const response = await changePassword({
-            newPassword,
-            token:
-              typeof router.query.token === 'string' ? router.query.token : '',
+            variables: {
+              newPassword,
+              token:
+                typeof router.query.token === 'string'
+                  ? router.query.token
+                  : '',
+            },
           });
           if (response.data?.changePassword.errors) {
             const errorMap = toErrorMap(response.data.changePassword.errors);
@@ -39,27 +43,27 @@ const ChangePassword: React.FC = () => {
         {({ isSubmitting }) => (
           <Form>
             <InputField
-              label='New Password'
-              name='newPassword'
-              placeholder='new password'
-              type='password'
+              label="New Password"
+              name="newPassword"
+              placeholder="new password"
+              type="password"
             />
 
             {tokenError ? (
               <Flex>
-                <Box mr={1} color='red.500'>
+                <Box mr={1} color="red.500">
                   {tokenError}
                 </Box>
-                <NextLink href='/forgot-password'>
+                <NextLink href="/forgot-password">
                   <Link>generate new link</Link>
                 </NextLink>
               </Flex>
             ) : null}
             <Button
-              type='submit'
+              type="submit"
               mt={4}
               isLoading={isSubmitting}
-              variantColor='teal'
+              variantColor="teal"
             >
               login
             </Button>
@@ -70,4 +74,4 @@ const ChangePassword: React.FC = () => {
   );
 };
 
-export default withUrqlClient(createUrqlClient)(ChangePassword);
+export default ChangePassword;

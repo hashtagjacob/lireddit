@@ -11,14 +11,16 @@ import { createUrqlClient } from '../utils/createUrqlClient';
 import NextLink from 'next/link';
 
 const Login: React.FC<{}> = ({}) => {
-  const [, login] = useLoginMutation();
+  const [login] = useLoginMutation();
   const router = useRouter();
   return (
-    <Wrapper variant='small'>
+    <Wrapper variant="small">
       <Formik
         initialValues={{ usernameOrEmail: '', password: '' }}
         onSubmit={async ({ usernameOrEmail, password }, { setErrors }) => {
-          const response = await login({ usernameOrEmail, password });
+          const response = await login({
+            variables: { usernameOrEmail, password },
+          });
           if (response.data?.login.errors) {
             setErrors(toErrorMap(response.data.login.errors));
           } else if (response.data?.login.user) {
@@ -33,30 +35,30 @@ const Login: React.FC<{}> = ({}) => {
         {({ isSubmitting }) => (
           <Form>
             <InputField
-              label='Username Or Email'
-              name='usernameOrEmail'
-              placeholder='username or email'
+              label="Username Or Email"
+              name="usernameOrEmail"
+              placeholder="username or email"
             />
             <Box mt={4}>
               <InputField
-                label='Password'
-                name='password'
-                placeholder='password'
-                type='password'
+                label="Password"
+                name="password"
+                placeholder="password"
+                type="password"
               />
             </Box>
             <Flex>
-              <NextLink href='/forgot-password'>
-                <Link ml='auto' mt={2}>
+              <NextLink href="/forgot-password">
+                <Link ml="auto" mt={2}>
                   Forgot password?
                 </Link>
               </NextLink>
             </Flex>
             <Button
-              type='submit'
+              type="submit"
               mt={4}
               isLoading={isSubmitting}
-              variantColor='teal'
+              variantColor="teal"
             >
               login
             </Button>
@@ -67,4 +69,4 @@ const Login: React.FC<{}> = ({}) => {
   );
 };
 
-export default withUrqlClient(createUrqlClient)(Login);
+export default Login;

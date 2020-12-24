@@ -1,24 +1,24 @@
-import { Box, Button } from "@chakra-ui/core";
-import { Form, Formik } from "formik";
-import { withUrqlClient } from "next-urql";
-import { useRouter } from "next/router";
-import React from "react";
-import { InputField } from "../../../components/InputField";
-import { Layout } from "../../../components/Layout";
+import { Box, Button } from '@chakra-ui/core';
+import { Form, Formik } from 'formik';
+import { withUrqlClient } from 'next-urql';
+import { useRouter } from 'next/router';
+import React from 'react';
+import { InputField } from '../../../components/InputField';
+import { Layout } from '../../../components/Layout';
 import {
   usePostQuery,
   useUpdatePostMutation,
-} from "../../../generated/graphql";
-import { createUrqlClient } from "../../../utils/createUrqlClient";
-import useGetIntId from "../../../utils/useGetIntId";
+} from '../../../generated/graphql';
+import { createUrqlClient } from '../../../utils/createUrqlClient';
+import useGetIntId from '../../../utils/useGetIntId';
 
 const EditPost: React.FC<{}> = ({}) => {
   const id = useGetIntId();
-  const [{ fetching, data }] = usePostQuery({ variables: { id } });
-  const [{}, updatePost] = useUpdatePostMutation();
+  const { loading, data } = usePostQuery({ variables: { id } });
+  const [updatePost] = useUpdatePostMutation();
   const router = useRouter();
 
-  if (fetching) {
+  if (loading) {
     return <Layout>loading...</Layout>;
   }
 
@@ -31,9 +31,8 @@ const EditPost: React.FC<{}> = ({}) => {
       <Formik
         initialValues={{ title: data.post.title, text: data.post.text }}
         onSubmit={async (values, { setErrors }) => {
-          const response = await updatePost({ id, ...values });
-          console.log(response);
-          if (!response.error) {
+          const response = await updatePost({ variables: { id, ...values } });
+          if (!response.errors) {
             router.back();
           }
         }}
@@ -68,4 +67,4 @@ const EditPost: React.FC<{}> = ({}) => {
   );
 };
 
-export default withUrqlClient(createUrqlClient)(EditPost);
+export default EditPost;

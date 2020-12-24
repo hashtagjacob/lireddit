@@ -1,14 +1,14 @@
-import { Box, Button, Flex, Heading, Link } from "@chakra-ui/core";
-import NextLink from "next/link";
-import { useRouter } from "next/router";
-import React from "react";
-import { useLogoutMutation, useMeQuery } from "../generated/graphql";
+import { Box, Button, Flex, Heading, Link } from '@chakra-ui/core';
+import NextLink from 'next/link';
+import { useRouter } from 'next/router';
+import React from 'react';
+import { useLogoutMutation, useMeQuery } from '../generated/graphql';
 
 interface NavbarProps {}
 
 export const Navbar: React.FC<NavbarProps> = ({}) => {
-  const [{ data, fetching: logoutFetching }] = useMeQuery();
-  const [{ fetching }, logout] = useLogoutMutation();
+  const { data, loading } = useMeQuery();
+  const [logout, { loading: fetching }] = useLogoutMutation();
   const router = useRouter();
   let body = null;
 
@@ -27,7 +27,7 @@ export const Navbar: React.FC<NavbarProps> = ({}) => {
               await logout();
               router.reload();
             }}
-            isLoading={logoutFetching}
+            isLoading={loading}
             variant="link"
           >
             Log out
